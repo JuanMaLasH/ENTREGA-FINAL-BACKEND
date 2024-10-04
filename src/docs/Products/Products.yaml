@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: API de Productos
+  version: 1.0.0
+paths:
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Obtenemos todos los productos
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Límite de productos por página
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Orden de los productos por precio
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Filtro por categoría de productos
+      responses:
+        "200":
+          description: Se obtienen todos los productos correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  docs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  totalPages:
+                    type: integer
+                  prevPage:
+                    type: integer
+                  nextPage:
+                    type: integer
+                  page:
+                    type: integer
+                  hasPrevPage:
+                    type: boolean
+                  hasNextPage:
+                    type: boolean
+                  prevLink:
+                    type: string
+                    nullable: true
+                  nextLink:
+                    type: string
+                    nullable: true
+        "500":
+          description: Hubo un error al obtener los productos
+    post:
+      summary: Crea un nuevo producto
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/createProduct'
+      responses:
+        "201":
+          description: Se creó el producto correctamente
+        "500":
+          description: Hubo un error al crear el producto
+  /api/products/{pid}:
+    get:
+      tags:
+        - Products
+      summary: Obtenemos un producto por su ID
+      parameters:
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      responses:
+        "200":
+          description: Se obtiene el producto correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Hubo un error al obtener el producto
+    put:
+      tags:
+        - Products
+      summary: Actualiza un producto por su ID
+      parameters:
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/createProduct'
+      responses:
+        "200":
+          description: Se actualizó el producto correctamente
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Hubo un error al actualizar el producto
+    delete:
+      tags:
+        - Products
+      summary: Elimina un producto por su ID
+      parameters:
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      responses:
+        "200":
+          description: Se eliminó el producto correctamente
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Hubo un error al eliminar el producto
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID del producto
+        title:
+          type: string
+          description: Nombre del producto
+        description:
+          type: string
+          description: Descripción del producto
+        code:
+          type: string
+          description: Código del producto
+        price:
+          type: number
+          description: Precio del producto
+        status:
+          type: boolean
+          description: Estado del producto  
+        stock:
+          type: number
+          description: Stock del producto
+        category:
+          type: string
+          description: Categoría del producto
+        thumbnails:
+          type: array
+          items:
+            type: string  
+        owner:
+          type: string
+          description: Nombre del creador
+      example:
+        _id: "66a669b87be66287e83f72ef"
+        title: "Procesador Intel Core i7 12700k 5.0GHz Turbo Socket 1700 Alder Lake"
+        description: "Núcleos: 12"
+        code: "BX8071512700K"
+        price: 409900
+        status: true
+        stock: 30
+        category: "Procesador"
+        thumbnails: ["https://imagenes.compragamer.com/productos/compragamer_Imganen_general_29140_Procesador_Intel_Core_i7_12700K_5.0GHz_Turbo_Socket_1700_Alder_Lake_4319ac0c-grn.jpg"]
+        owner: admin
+  requestBodies:
+    createProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Nombre del producto
+        description:
+          type: string
+          description: Descripción del producto
+        code:
+          type: string
+          description: Código del producto  
+        price:
+          type: number
+          description: Precio del producto
+        status:
+          type: boolean
+          description: Estado del producto  
+        stock:
+          type: number
+          description: Stock del producto
+        category:
+          type: string
+          description: Categoría del producto
+        thumbnails:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string
+          description: Nombre del creador    
+      example:
+        title: "Procesador Intel Core i7 12700k 5.0GHz Turbo Socket 1700 Alder Lake"
+        description: "Núcleos: 12"
+        code: "BX8071512700K"
+        price: 409900
+        status: true
+        stock: 30
+        category: "Procesador"
+        thumbnails: ["https://imagenes.compragamer.com/productos/compragamer_Imganen_general_29140_Procesador_Intel_Core_i7_12700K_5.0GHz_Turbo_Socket_1700_Alder_Lake_4319ac0c-grn.jpg"]
+        owner: admin

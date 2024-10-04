@@ -1,0 +1,235 @@
+paths:
+  /api/carts:
+    post:
+      tags:
+        - Carts
+      summary: Crea un nuevo carrito
+      responses:
+        "200":
+          description: Carrito creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "500":
+          description: Hubo un error al crear el carrito
+  /api/carts/{cid}:
+    get:
+      tags:
+        - Carts
+      summary: Obtiene los productos de un carrito por ID
+      parameters:
+        - in: path
+          name: cid
+          schema:
+            type: string
+          required: true
+          description: ID del carrito
+      responses:
+        "200":
+          description: Productos obtenidos correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "404":
+          description: Carrito no encontrado
+        "500":
+          description: Hubo un error al obtener el carrito
+    put:
+      tags:
+        - Carts
+      summary: Actualiza los productos de un carrito por ID
+      parameters:
+        - in: path
+          name: cid
+          schema:
+            type: string
+          required: true
+          description: ID del carrito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductInCart'
+      responses:
+        "200":
+          description: Carrito actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "500":
+          description: Hubo un error al actualizar el carrito
+    delete:
+      tags:
+        - Carts
+      summary: Vacía el carrito por ID
+      parameters:
+        - in: path
+          name: cid
+          schema:
+            type: string
+          required: true
+          description: ID del carrito
+      responses:
+        "200":
+          description: Carrito vaciado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "500":
+          description: Hubo un error al vaciar el carrito
+  /api/carts/{cid}/product/{pid}:
+    post:
+      tags:
+        - Carts
+      summary: Agrega un producto al carrito
+      parameters:
+        - in: path
+          name: cid
+          schema:
+            type: string
+          required: true
+          description: ID del carrito
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                  default: 1
+      responses:
+        "200":
+          description: Producto agregado al carrito correctamente
+        "500":
+          description: Hubo un error al agregar el producto al carrito
+    delete:
+      tags:
+        - Carts
+      summary: Elimina un producto del carrito
+      parameters:
+        - in: path
+          name: cid
+          schema:
+            type: string
+          required: true
+          description: ID del carrito
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: ID del producto
+      responses:
+        "200":
+          description: Producto eliminado del carrito correctamente
+        "500":
+          description: Hubo un error al eliminar el producto del carrito
+  /api/carts/{cid}/purchase:
+    post:
+      tags:
+        - Carts
+      summary: Finaliza la compra de un carrito
+      parameters:
+        - in: path
+          name: cid
+          schema:
+            type: string
+          required: true
+          description: ID del carrito
+      responses:
+        "200":
+          description: Compra finalizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        "500":
+          description: Hubo un error al finalizar la compra
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID del carrito
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductInCart'
+        user:
+          type: string
+          description: ID del usuario
+      example:
+        _id: 123
+        products:
+          - product:
+              _id: "66a669b87be66287e83f72ef"
+              title: "Procesador Intel Core i7 12700k 5.0GHz Turbo Socket 1700 Alder Lake"
+              price: 409900
+            quantity: 1
+        user: 123456
+    ProductInCart:
+      type: object
+      properties:
+        product:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: ID del producto
+            title:
+              type: string
+              description: nombre del producto
+            price:
+              type: number
+              description: precio del producto
+        quantity:
+          type: number
+          description: cantidad del producto en el carrito
+      example:
+        product:
+          _id: "66a669b87be66287e83f72ef"
+          title: "Procesador Intel Core i7 12700k 5.0GHz Turbo Socket 1700 Alder Lake"
+          price: 409900
+        quantity: 1
+    Ticket:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID del ticket
+        code:
+          type: string
+          description: Código único del ticket
+        purchase_datetime:
+          type: string
+          format: date-time
+          description: Fecha y hora de la compra
+        amount:
+          type: number
+          description: Monto total de la compra
+        purchaser:
+          type: string
+          description: ID del comprador
+      example:
+        _id: 123456
+        code: ABC123
+        purchase_datetime: '2024-08-04T12:34:56Z'
+        amount: 409900
+        purchaser: 123456
